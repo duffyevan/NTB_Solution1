@@ -1,7 +1,8 @@
 class SPSLib:
 
-    def __init__(self, client):
+    def __init__(self, client, default_destination=""):
         self.client = client
+        self.default_destination = default_destination
 
     def change_to_date(self, date):
         year = str(date.year)
@@ -13,7 +14,7 @@ class SPSLib:
         self.change_to_date(date)
         files = self.ls()
         for file in files:
-            outfile = open(file, 'wb')
+            outfile = open(self.default_destination + file, 'wb')
             self.client.retrbinary("retr " + file, outfile.write)
             outfile.close()
         self.client.cwd(directory)

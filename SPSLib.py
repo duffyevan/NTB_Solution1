@@ -22,15 +22,17 @@ class SPSLib:
     def ls(self):
         return self.client.nlst()
 
-    def get_total_size(self):
+    def get_total_size(self, directory):
+        return_dir = self.client.pwd()
         size = 0
-        for filename in self.client.nlst('/'):
-            # print (filename)
-            for filename2 in self.client.nlst('/' + filename):
-                # print ('--> ' + filename2)                
-                for filename3 in self.client.nlst('/' + filename + '/' + filename2):
-                    # print ('------> ' + filename3)                                
-                    size += self.client.size('/' + filename + '/' + filename2 + '/' + filename3)
+        for filename in self.client.nlst(directory):
+            self.client.cwd(return_dir)
+            try:
+                self.client.cwd(filename)
+                size += self.get_total_size('./')
+            except:
+                self.client.voidcmd('TYPE I')
+                size += self.client.size(filename)
         return size
 
     def close_connection(self):

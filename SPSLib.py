@@ -21,3 +21,17 @@ class SPSLib:
 
     def ls(self):
         return self.client.nlst()
+
+    def get_total_size(self):
+        size = 0
+        for filename in self.client.nlst('/'):
+            # print (filename)
+            for filename2 in self.client.nlst('/' + filename):
+                # print ('--> ' + filename2)                
+                for filename3 in self.client.nlst('/' + filename + '/' + filename2):
+                    # print ('------> ' + filename3)                                
+                    size += self.client.size('/' + filename + '/' + filename2 + '/' + filename3)
+        return size
+
+    def close_connection(self):
+        self.client.quit()

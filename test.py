@@ -3,7 +3,7 @@ import sys
 import os
 import datetime
 import configparser
-from SPSLib import *
+from SPSLib import SPSLib
 
 config = configparser.ConfigParser()
 config.read('collection.conf')
@@ -13,20 +13,14 @@ user = config['DEFAULT']['username']
 password = config['DEFAULT']['password']
 destination = config['DEFAULT']['default_destination']
 
-if not os.path.isdir(destination): # Make sure the destination dir exists
-    os.makedirs(destination) # Create it if needed
 
-for address in addresses:
-    try:
-        # Create Client and Log In
-        ftp = FTP(address)
-        ftp.login(user=user, passwd=password)
-        sps = SPSLib(ftp, default_destination=destination)
-        sps.download_files_for_month(datetime.datetime.now())
-        ftp.quit()
+ftp = FTP('10.0.0.99')
+ftp.login(user=user, passwd=password)
 
-    except:
-        print("Error Retrieving Data From SPS at address: " + address)
-        print("--> ", sys.exc_info()[0])
+sps = SPSLib(ftp)
+totalusage = sps.get_total_size()
+totalusageMB = totalusage/(1024*1024) 
+print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
 
+sps.close_connection()
 

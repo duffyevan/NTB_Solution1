@@ -18,7 +18,7 @@ ftp = FTP('10.0.0.99')
 ftp.login(user=user, passwd=password)
 
 sps = SPSLib(ftp)
-totalusage = sps.get_total_size()
+totalusage = sps.get_total_size('/')
 totalusageMB = totalusage/(1024*1024) 
 print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
 

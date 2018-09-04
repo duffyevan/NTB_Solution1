@@ -25,15 +25,20 @@ class SPSLib:
     def get_total_size(self, directory):
         return_dir = self.client.pwd()
         size = 0
+        files = 0
+
         for filename in self.client.nlst(directory):
             self.client.cwd(return_dir)
             try:
                 self.client.cwd(filename)
-                size += self.get_total_size('./')
+                tupleresult =  self.get_total_size('./')
+                size += tupleresult[0]
+                files += tupleresult[1]
             except:
                 self.client.voidcmd('TYPE I')
                 size += self.client.size(filename)
-        return size
+                files += 1
+        return (size, files)
 
     def close_connection(self):
         self.client.quit()

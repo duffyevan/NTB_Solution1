@@ -1,6 +1,8 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+from string import Template
+
 
 
 class EMail:
@@ -32,6 +34,33 @@ class EMail:
 
     def get_subject(self):
         return self.message["Subject"]
+
+    #following two functions from the Website https://medium.freecodecamp.org/send-emails-using-code-4fcea9df63f
+
+    @staticmethod
+    def read_template(filename):
+        """
+        Returns a Template object comprising the contents of the 
+        file specified by filename.
+        """
+        with open(filename, 'r', encoding='utf-8') as template_file:
+            template_file_content = template_file.read()
+        return Template(template_file_content)
+
+    @staticmethod
+    def get_contacts(filename):
+        """
+        Return two lists names, emails containing names and email addresses
+        read from a file specified by filename.
+        """
+        
+        names = []
+        emails = []
+        with open(filename, mode='r', encoding='utf-8') as contacts_file:
+            for a_contact in contacts_file:
+                names.append(a_contact.split()[0])
+                emails.append(a_contact.split()[1])
+        return names, emails
 
 
 class EMailSender:

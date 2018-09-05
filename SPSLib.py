@@ -19,6 +19,18 @@ class SPSLib:
             outfile.close()
         self.client.cwd(directory)
 
+    def download_files_for_day(self, date):
+        directory = self.client.pwd()
+        self.change_to_date(date)
+        datestring = str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2)
+        files = self.ls()
+        for file in files:
+            if datestring in file:
+                outfile = open(self.default_destination + file, 'wb')
+                self.client.retrbinary("retr " + file, outfile.write)
+                outfile.close()
+        self.client.cwd(directory)
+
     def ls(self):
         return self.client.nlst()
 

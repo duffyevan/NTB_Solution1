@@ -22,13 +22,13 @@ numretries = int(config['DEFAULT']['number_connection_retries'])
 retrydelay = int(config['DEFAULT']['connection_retry_delay'])
 warning_days = int(config['EMAIL']['warning_days'])
 
-ftp = 0
 failed_connections = []
 days_rem = []
 full_plcs = []
 
 for address in addresses:
     success = False
+    ftp = 0
     for n in range(0, numretries):
         try:
             ftp = FTP(address)
@@ -47,7 +47,7 @@ for address in addresses:
 
     #file Size and days left calcualtor
     SD_size = int(config['EMAIL']['SD_size'])
-    sps = SPSLib(ftp)
+    sps = SPSLib(ftp, default_destination=destination)
     tupleresult = sps.get_total_size('/')
     totalusage = tupleresult[0]
     totalusageMB = round(totalusage/(1024*1024), 2) 
@@ -59,7 +59,7 @@ for address in addresses:
     elif days_left is 0:
         full_plcs.append(address)
 
-
+    sps.download_files_for_month(datetime.datetime.now())
 
     print ('print tuple: ' + str(tupleresult))
     print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')

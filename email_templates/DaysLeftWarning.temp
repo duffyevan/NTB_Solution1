@@ -1,8 +1,9 @@
 Dear ${user},
 
-Improtant Massage:
+Important Massage:
 
-The SPS with the address of ${address} is expected to be full in ${days} day. 
+Some SPSs are almost full. The following SPSs have less than ${limit} days left:
+[[addresses]]
 Please clear the storage on the SPS now.
 
 The clearing process must be done manually using linkmanager!

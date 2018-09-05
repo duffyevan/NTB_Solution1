@@ -3,7 +3,8 @@ Dear ${user},
 CRITICAL MASSAGE:
 
 Connection error.
-Failed to connect to the SPS with the address of ${address}! 
+Failed to connect to the SPSs with the addresses of ${address}!
+
 Please do a munnual check to fix the problem!
 
 From,

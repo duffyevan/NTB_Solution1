@@ -20,8 +20,13 @@ password = config['DEFAULT']['password']
 destination = config['DEFAULT']['default_destination']
 numretries = int(config['DEFAULT']['number_connection_retries'])
 retrydelay = int(config['DEFAULT']['connection_retry_delay'])
+warning_days = int(config['EMAIL']['warning_days'])
 
 ftp = 0
+failed_connections = []
+days_rem = []
+full_plcs = []
+
 for address in addresses:
     success = False
     for n in range(0, numretries):
@@ -35,8 +40,8 @@ for address in addresses:
 
     if not success:
         print('Error Connecting To PLC at ' + address)
+        failed_connections.append(address)
         continue
-        # sys.exit(1)
 
 
 
@@ -49,6 +54,12 @@ for address in addresses:
     avg_size = round(totalusageMB/tupleresult[1], 2)
     size_left = round((SD_size - totalusageMB), 2)
     days_left = int(size_left/avg_size)
+    if days_left <= warning_days and days_left > 0:
+        days_rem.append((address, days_left))
+    elif days_left is 0:
+        full_plcs.append(address)
+
+
 
     print ('print tuple: ' + str(tupleresult))
     print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
@@ -60,31 +71,82 @@ for address in addresses:
     sps.close_connection()
 
 
-    #Emial Section:
 
-    names, emails = EMail.get_contacts('email_templates/email_addresses.txt') # read contacts
-    message_template = EMail.read_template('email_templates/OneDayWarning.temp')
+print (failed_connections)
+print (days_rem)
+print (full_plcs)
 
 
-    sender = EMailSender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'])
-    sender.login(config['EMAIL']['username'],config['EMAIL']['password'])
 
+
+"""
+Send Warning Emails
+"""
+
+names, emails = EMail.get_contacts('email_templates/email_addresses.txt') # read contacts
+
+sender = EMailSender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'])
+sender.login(config['EMAIL']['username'],config['EMAIL']['password'])
+
+if len(failed_connections) > 0:
     # For each contact, send the email:
+    message_template = EMail.read_template('email_templates/ConnectionError.temp')
     for name, email in zip(names, emails):
-        msg = MIMEMultipart()       # create a message
 
         # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=address, days=days_left)
+        body = message_template.substitute(user=name.title(), address=failed_connections)
         
         message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("Test Email Send From Library")
+        message.set_subject("SPS Connection Error")
         message.set_body(body)
 
         # send the message via the server set up earlier.
-        # sender.send_message(message)
+        sender.send_message(message)
 
         # Prints out the message body for our sake
         print(body)
+
+if len(full_plcs) > 0:
+    # For each contact, send the email:
+    message_template = EMail.read_template('email_templates/SPS_FullWarning.temp')
+    for name, email in zip(names, emails):
+
+        # add in the actual person name to the message template
+        body = message_template.substitute(user=name.title(), address=full_plcs)
         
-    # Terminate the SMTP session and close the connection
-    sender.quit()
+        message = EMail(config['EMAIL']['username'], email)
+        message.set_subject("SPSs Are Full")
+        message.set_body(body)
+
+        # send the message via the server set up earlier.
+        sender.send_message(message)
+
+        # Prints out the message body for our sake
+        print(body)
+
+if len(days_rem) > 0:
+    # For each contact, send the email:
+    message_template = EMail.read_template('email_templates/DaysLeftWarning.temp')
+    for name, email in zip(names, emails):
+
+        # add in the actual person name to the message template
+        body = message_template.substitute(user=name.title(), address=full_plcs, limit=config['EMAIL']['warning_days'])
+        
+        addresses_string = ""
+        for address, days in days_rem:
+            addresses_string = addresses_string + address + " has " + str(days) + " days left.\r\n" 
+
+        body = body.replace("[[addresses]]", addresses_string)
+
+        message = EMail(config['EMAIL']['username'], email)
+        message.set_subject("SPSs Are Almost Full")
+        message.set_body(body)
+
+        # send the message via the server set up earlier.
+        sender.send_message(message)
+
+        # Prints out the message body for our sake
+        print(body)
+
+# Terminate the SMTP session and close the connection
+sender.quit()

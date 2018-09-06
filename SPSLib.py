@@ -24,12 +24,16 @@ class SPSLib:
         self.change_to_date(date)
         datestring = str(date.year) + str(date.month).zfill(2) + str(date.day).zfill(2)
         files = self.ls()
+        num_files = 0
         for file in files:
             if datestring in file:
+                num_files = num_files+1
                 outfile = open(self.default_destination + file, 'wb')
                 self.client.retrbinary("retr " + file, outfile.write)
                 outfile.close()
         self.client.cwd(directory)
+        if num_files is 0:
+            raise Exception('No Files Available For Date ' + datestring)
 
     def ls(self):
         return self.client.nlst()

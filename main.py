@@ -7,7 +7,8 @@ import smtplib
 from SPSLib import SPSLib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from EMailLib import *
+from EMailLib import EMail, EMailSender
+from HostpointLib import HostpointClient
 import time
 
 
@@ -59,22 +60,18 @@ for address in addresses:
     elif days_left is 0:
         full_plcs.append(address)
 
-    sps.download_files_for_month(datetime.datetime.now())
-
-    print ('print tuple: ' + str(tupleresult))
-    print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
-    print ('Avarage file size per day in MB: ' + str(avg_size) + 'MB')
-    print ('Size left before full: ' + str(size_left) + 'MB')
-    print ('Days left before storage is full: ' + str(days_left) + ' days')
-
+    files_before_download = os.listdir(destination) # list out the target dir to get the list of old files
+    print("Downloading Files From SPS...")
+    sps.download_files_for_month(datetime.datetime.now()) # download all files from the month
+    print("Done!")
+    files_after_download = os.listdir(destination) # get the new list of files 
+    new_files = list(set(files_after_download) - set(files_before_download)) # isolate a list of files that are newly downloaded
+    print("Uploading Files To HostPoint...")
+    hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password']) # Log into the hostpoint ftp server
+    hp.upload_files([os.path.join(destination, file) for file in new_files]) # Upload only the new files that have just been downloaded
+    print("Done!")
 
     sps.close_connection()
-
-
-
-print (failed_connections)
-print (days_rem)
-print (full_plcs)
 
 
 

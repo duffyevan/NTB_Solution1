@@ -1,3 +1,5 @@
+import os
+
 class SPSLib:
 
     def __init__(self, client, default_destination=""):
@@ -58,3 +60,9 @@ class SPSLib:
 
     def close_connection(self):
         self.client.quit()
+
+    @staticmethod
+    def clean_directory(directory):
+        for file in os.listdir(directory):
+            if '.xls' in file or '.xlsx' in file:
+                os.unlink(os.path.join(directory, file))

@@ -8,6 +8,7 @@ from SPSLib import SPSLib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from EMailLib import *
+from HostpointLib import HostpointClient
 import time
 
 
@@ -59,7 +60,13 @@ for address in addresses:
     elif days_left is 0:
         full_plcs.append(address)
 
+    print("Downloading Files From SPS...")
     sps.download_files_for_month(datetime.datetime.now())
+    print("Done!")
+    print("Uploading Files To HostPoint...")
+    hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password'])
+    hp.upload_all_files_in_directory(destination)
+    print("Done!")
 
     print ('print tuple: ' + str(tupleresult))
     print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')

@@ -60,16 +60,17 @@ for address in addresses:
     elif days_left is 0:
         full_plcs.append(address)
 
-    print("Cleaning out old files")
-    SPSLib.clean_directory(destination)
+    files_before_download = os.listdir(destination) 
     print("Downloading Files From SPS...")
-    sps.download_files_for_day(datetime.datetime.now())
+    sps.download_files_for_month(datetime.datetime.now())
     print("Done!")
+    files_after_download = os.listdir(destination)
+    new_files = list(set(files_after_download) - set(files_before_download))
+    print("New Files: ", new_files)
     print("Uploading Files To HostPoint...")
     hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password'])
-    hp.upload_all_files_in_directory(destination)
-    print("Done! Cleaning Out Downloaded Files")
-    SPSLib.clean_directory(destination)
+    hp.upload_files([os.path.join(destination, file) for file in new_files])
+    print("Done!")
 
 
     print ('print tuple: ' + str(tupleresult))

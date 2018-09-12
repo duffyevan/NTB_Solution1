@@ -4,64 +4,41 @@ import smtplib
 from string import Template
 
 
-
+## An Email Message To Be Sent Via an Email Sender 
 class EMail:
-    """An Email Message To Be Sent Via an Email Sender
-    """
-
+    
+    ## The Constructor
+    # @param from_address {string} The email address to send the email from 
+    # @param to_address {string} The email address to send the email to
     def __init__(self, from_address, to_address):
-        """The Constructor
-        
-        Arguments:
-            from_address {string} -- The email address to send the email from 
-            to_address {string} -- The email address to send the email to
-        """
         self.message = MIMEMultipart()
         self.message["To"] = to_address
         self.message["From"] = from_address
 
+    ## Set the from address
+    # @param address {string}From address
     def set_from(self, address):
-        """Set the from address
         
-        Arguments:
-            address {string} -- From address
-        """
         self.message["From"] = address
 
+    ## Set the to address
+    # @param address {string}To Address
     def set_to(self, address):
-        """Set the to address
-        
-        Arguments:
-            address {string} -- To Address
-        """
-
         self.message["To"] = address
 
+    ## Set the subject of the email
+    # @param subject {string}The Subject
     def set_subject(self, subject):
-        """Set the subject of the email
-        
-        Arguments:
-            subject {string} -- The Subject
-        """
-
         self.message["Subject"] = subject
 
+    ## Set the body of the email to some text
+    # @param text {string} Text to set the email body to
     def set_body(self, text):
-        """Set the body of the email to some text
-        
-        Arguments:
-            text {string} -- Text to set the email body to
-        """
-
         self.message.attach(MIMEText(text))
 
+    ## Set the body of the emial to some html and package it up correctly
+    # @param html {string}String of html code to be packaged and sent as the body
     def set_body_html(self, html):
-        """Set the body of the emial to some html and package it up correctly
-        
-        Arguments:
-            html {string} -- String of html code to be packaged and sent as the body
-        """
-
         self.message.attach(MIMEText(html, 'html'))
 
     def get_from(self):
@@ -74,34 +51,22 @@ class EMail:
         return self.message["Subject"]
 
     #following two functions from the Website https://medium.freecodecamp.org/send-emails-using-code-4fcea9df63f
+    
+    ## Returns a Template object comprising the contents of the file specified by filename.
+    # @param filename {string}Path to the tempalte file to load
+    # @return TemplateThe template object to be used to construct emails
 
     @staticmethod
     def read_template(filename):
-        """Returns a Template object comprising the contents of the 
-        file specified by filename.
-
-        Arguments:
-            filename {string} -- Path to the tempalte file to load
-
-        Returns:
-            Template -- The template object to be used to construct emails
-        """
         with open(filename, 'r', encoding='utf-8') as template_file:
             template_file_content = template_file.read()
         return Template(template_file_content)
 
+    ## Return two lists names, emails containing names and email addresses read from a file specified by filename.
+    # @param filename {string} Path to the tempalte file to load
+    # @return (names, emails)Tuple of contact names and corresponding contact emails
     @staticmethod
     def get_contacts(filename):
-        """Return two lists names, emails containing names and email addresses
-        read from a file specified by filename.
-        
-        Arguments:
-            filename {string} -- Path to the tempalte file to load
-
-        Returns:
-            (names, emails) -- Tuple of contact names and corresponding contact emails
-        """
-        
         names = []
         emails = []
         with open(filename, mode='r', encoding='utf-8') as contacts_file:
@@ -109,44 +74,30 @@ class EMail:
                 names.append(a_contact.split()[0])
                 emails.append(a_contact.split()[1])
         return names, emails
+    
+    ## @var message
+    # The SMTP Message object to be sent by the email sender
 
-
+## Wrapper Over an SMTP Server to Send EMail Objects
 class EMailSender:
-    """Wrapper Over an SMTP Server to Send EMail Objects
-    """
-
+    ## The Constructor
+    # @param server {string} FQDN of the SMTP server
+    # @param port {int} Port number for the TLS version of SMTP
     def __init__(self, server, port):
-        """The Constructor
-        
-        Arguments:
-            server {string} -- FQDN of the SMTP server
-            port {int} -- Port number for the TLS version of SMTP
-        """
-
         self.smtp = smtplib.SMTP(server, port=port)
         self.smtp.starttls()
-    
-    def login(self, username, password):
-        """Call the login function on the SMTP server
-        
-        Arguments:
-            username {string} -- Username to use to log into the SMTP server
-            password {string} -- Password for given username
-        """
 
+    ## Call the login function on the SMTP server
+    # @param username {string} Username to use to log into the SMTP server
+    # @param password {string} Password for given username    
+    def login(self, username, password):
         self.smtp.login(username, password)
 
+    ## Send a given message via the SMTP server
+    # @param message {EMailLib.Email} An email object representing the message to be sent
     def send_message(self, message):
-        """Send a given message via the SMTP server
-        
-        Arguments:
-            message {EMailLib.Email} -- An email object representing the message to be sent
-        """
-
         self.smtp.sendmail(message.get_from(), message.get_to(), message.message.as_string())
 
+    ## Quit the SMTP connection
     def quit(self):
-        """Quit the SMTP connection
-        """
-
         self.smtp.quit()

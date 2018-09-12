@@ -35,6 +35,11 @@ if not os.path.exists(destination):
 
 
 for address in addresses:
+
+    plc_dest = destination + address + '\\'
+    if not os.path.exists(plc_dest):
+        os.makedirs(plc_dest)
+
     success = False
     ftp = 0
     for n in range(0, numretries):
@@ -55,7 +60,7 @@ for address in addresses:
 
     #file Size and days left calcualtor
     SD_size = int(config['EMAIL']['SD_size'])
-    sps = SPSLib(ftp, default_destination=destination)
+    sps = SPSLib(ftp, default_destination=plc_dest)
     tupleresult = sps.get_total_size('/')
     totalusage = tupleresult[0]
     totalusageMB = round(totalusage/(1024*1024), 2) 
@@ -67,15 +72,15 @@ for address in addresses:
     elif days_left is 0:
         full_plcs.append(address)
 
-    files_before_download = os.listdir(destination) # list out the target dir to get the list of old files
+    files_before_download = os.listdir(plc_dest) # list out the target dir to get the list of old files
     print("Downloading Files From SPS...")
     sps.download_files_for_month(datetime.datetime.now()) # download all files from the month
     print("Done!")
-    files_after_download = os.listdir(destination) # get the new list of files 
+    files_after_download = os.listdir(plc_dest) # get the new list of files 
     new_files = list(set(files_after_download) - set(files_before_download)) # isolate a list of files that are newly downloaded
     print("Uploading Files To HostPoint...")
     hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password']) # Log into the hostpoint ftp server
-    hp.upload_files([os.path.join(destination, file) for file in new_files]) # Upload only the new files that have just been downloaded
+    hp.upload_files([os.path.join(plc_dest, file) for file in new_files]) # Upload only the new files that have just been downloaded
     print("Done!")
 
     sps.close_connection()

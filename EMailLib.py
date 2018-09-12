@@ -16,18 +16,18 @@ class EMail:
         self.message["From"] = from_address
 
     ## Set the from address
-    # @param address {string}From address
+    # @param address {string} From address
     def set_from(self, address):
         
         self.message["From"] = address
 
     ## Set the to address
-    # @param address {string}To Address
+    # @param address {string} To Address
     def set_to(self, address):
         self.message["To"] = address
 
     ## Set the subject of the email
-    # @param subject {string}The Subject
+    # @param subject {string} The Subject
     def set_subject(self, subject):
         self.message["Subject"] = subject
 
@@ -37,7 +37,7 @@ class EMail:
         self.message.attach(MIMEText(text))
 
     ## Set the body of the emial to some html and package it up correctly
-    # @param html {string}String of html code to be packaged and sent as the body
+    # @param html {string} String of html code to be packaged and sent as the body
     def set_body_html(self, html):
         self.message.attach(MIMEText(html, 'html'))
 
@@ -53,9 +53,8 @@ class EMail:
     #following two functions from the Website https://medium.freecodecamp.org/send-emails-using-code-4fcea9df63f
     
     ## Returns a Template object comprising the contents of the file specified by filename.
-    # @param filename {string}Path to the tempalte file to load
+    # @param filename {string} Path to the tempalte file to load
     # @return TemplateThe template object to be used to construct emails
-
     @staticmethod
     def read_template(filename):
         with open(filename, 'r', encoding='utf-8') as template_file:

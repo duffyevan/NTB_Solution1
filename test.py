@@ -18,7 +18,7 @@ config.read('collection.conf')
 addresses = (config['DEFAULT']['addresses']).split(',')
 user = config['DEFAULT']['username']
 password = config['DEFAULT']['password']
-destination = config['DEFAULT']['default_destination']
+destination = config['DEFAULT']['default_destination'].replace("~", "c:\\Users\\" + os.getlogin())
 numretries = int(config['DEFAULT']['number_connection_retries'])
 retrydelay = int(config['DEFAULT']['connection_retry_delay'])
 warning_days = int(config['EMAIL']['warning_days'])
@@ -26,6 +26,13 @@ warning_days = int(config['EMAIL']['warning_days'])
 failed_connections = []
 days_rem = []
 full_plcs = []
+
+
+
+if not os.path.exists(destination):
+    os.makedirs(destination)
+
+
 
 for address in addresses:
     success = False

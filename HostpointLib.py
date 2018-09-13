@@ -50,8 +50,5 @@ class HostpointClient:
     # @param newFiles {list[string]} List of names of the new files that need to be uploaded
     @staticmethod
     def upload_to_Hostpoint(hostname, username, password, localDest, newFiles):
-        # Log into the hostpoint ftp server
         hp = HostpointClient(hostname , username, password)
-
-        # Upload only the new files that have just been downloaded
         hp.upload_files([os.path.join(localDest, file) for file in newFiles]) 

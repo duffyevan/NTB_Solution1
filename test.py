@@ -68,91 +68,21 @@ for address in addresses:
     sps.close_connection()
 
 
+#parse the email recipient text file
+names, emails = EMail.get_contacts('email_templates/email_addresses.txt')
 
+#log into the email
+sender = EMailSender.setup_email_sender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'], config['EMAIL']['username'], config['EMAIL']['password'])
 
-"""
-Send Warning Emails
-"""
-
-names, emails = EMail.get_contacts('email_templates/email_addresses.txt') # read contacts
-
-sender = EMailSender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'])
-sender.login(config['EMAIL']['username'],config['EMAIL']['password'])
-
+#send the emails
 if len(failed_connections) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/ConnectionError.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=failed_connections)
-        
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPS Connection Error")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/ConnectionError.temp', "SPS Connection Error", failed_connections)
 
 if len(full_plcs) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/SPS_FullWarning.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=full_plcs)
-        
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPSs Are Full")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/SPS_FullWarning.temp', "SPSs Are Full", full_plcs)
 
 if len(days_rem) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/DaysLeftWarning.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=full_plcs, limit=config['EMAIL']['warning_days'])
-        
-        addresses_string = ""
-        for address, days in days_rem:
-            addresses_string = addresses_string + address + " has " + str(days) + " days left.\r\n" 
-
-        body = body.replace("[[addresses]]", addresses_string)
-
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPSs Are Almost Full")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email_almost_full(config['EMAIL']['username'], zip(names, emails), 'email_templates/DaysLeftWarning.temp', "SPSs Are Almost Full", days_rem, config['EMAIL']['warning_days'])
 
 # Terminate the SMTP session and close the connection
 sender.quit()
-
-
-
-
-    # print("Downloading Files From SPS...")
-    # print("Uploading Files To HostPoint...")  
-    # print("Done!")
-    # print ('print tuple: ' + str(tupleresult))
-    # print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
-    # print ('Avarage file size per day in MB: ' + str(avg_size) + 'MB')
-    # print ('Size left before full: ' + str(size_left) + 'MB')
-    # print ('Days left before storage is full: ' + str(days_left) + ' days')
-    # print (failed_connections)
-    # print (days_rem)
-    # print (full_plcs)

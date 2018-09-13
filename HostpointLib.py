@@ -37,3 +37,21 @@ class HostpointClient:
     ## Close the connection with HostPoint server
     def close(self):
         self.client.close()
+
+
+    #####Milap Changes
+    ##
+
+    ## Logs into Host Point and uploads new files to it
+    # @param hostname {string} Name name of the host (Their login address)
+    # @param username {string} Username used for login
+    # @param password {string} Password used for login
+    # @param localDest {string} the download path on the local pc
+    # @param newFiles {list[string]} List of names of the new files that need to be uploaded
+    @staticmethod
+    def upload_to_Hostpoint(hostname, username, password, localDest, newFiles):
+        # Log into the hostpoint ftp server
+        hp = HostpointClient(hostname , username, password)
+
+        # Upload only the new files that have just been downloaded
+        hp.upload_files([os.path.join(localDest, file) for file in newFiles]) 

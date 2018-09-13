@@ -116,6 +116,8 @@ class SPSLib:
 
 ####Milap changes##
 
+    ## Calculates the number of days left before the PLC storage is expected to be full 
+    # @param SD_size {intiger} Size of the storage on the PLC in MB
     def calulate_days_till_full(self, SD_size):
         tupleresult = self.get_total_size('/')
         totalusage = tupleresult[0]
@@ -125,7 +127,20 @@ class SPSLib:
         return int(size_left/avg_size)
 
 
+    ## Checks to see of the given path is valid on the local PC storage. If it is not, then it creates the path and folders.
+    # @param destination {string} Path to the directory on the local storage
     @staticmethod
     def path_exist(destination):
         if not os.path.exists(destination):
             os.makedirs(destination)
+
+
+    ## Downloads all the files for a given month form the sps into the local directory on the pc
+    # @param destination {string} Path to the directory on the local storage
+    # @param datetime {string} Date of the month that will be downloaded
+    def download_files_to_pc(self, destination, datetime):
+        files_before_download = os.listdir(destination) 
+        self.download_files_for_month(datetime) 
+        files_after_download = os.listdir(destination) 
+        new_files = list(set(files_after_download) - set(files_before_download)) 
+        return new_files

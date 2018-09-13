@@ -59,14 +59,12 @@ for address in addresses:
 
 
     #download files to the local pc storage
-    files_before_download = os.listdir(plc_dest) # list out the target dir to get the list of old files
-    sps.download_files_for_month(datetime.datetime.now()) # download all files from the month
-    files_after_download = os.listdir(plc_dest) # get the new list of files 
-    new_files = list(set(files_after_download) - set(files_before_download)) # isolate a list of files that are newly downloaded
-    hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password']) # Log into the hostpoint ftp server
-    hp.upload_files([os.path.join(plc_dest, file) for file in new_files]) # Upload only the new files that have just been downloaded
+    new_files = sps.download_files_to_pc(plc_dest, datetime.datetime.now())
 
+    #upload new files to Host Point
+    HostpointClient.upload_to_Hostpoint(config['HOSTPOINT']['hostname'], config['HOSTPOINT']['username'], config['HOSTPOINT']['password'], plc_dest, new_files)
 
+    #disconnect from the plc
     sps.close_connection()
 
 

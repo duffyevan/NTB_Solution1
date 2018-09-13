@@ -109,3 +109,23 @@ class SPSLib:
         for file in os.listdir(directory):
             if '.xls' in file or '.xlsx' in file:
                 os.unlink(os.path.join(directory, file))
+
+
+
+
+
+####Milap changes##
+
+    def calulate_days_till_full(self, SD_size):
+        tupleresult = self.get_total_size('/')
+        totalusage = tupleresult[0]
+        totalusageMB = round(totalusage/(1024*1024), 2) 
+        avg_size = round(totalusageMB/tupleresult[1], 2)
+        size_left = round((SD_size - totalusageMB), 2)
+        return int(size_left/avg_size)
+
+
+    @staticmethod
+    def path_exist(destination):
+        if not os.path.exists(destination):
+            os.makedirs(destination)

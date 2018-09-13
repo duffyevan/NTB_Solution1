@@ -4,7 +4,7 @@ import os
 import datetime
 import configparser
 import smtplib
-from SPSLib import SPSLib
+from SPSLib import SPSLib, SPSConnectionException
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from EMailLib import EMail, EMailSender
@@ -12,9 +12,11 @@ from HostpointLib import HostpointClient
 import time
 
 
+#setup reading the config file
 config = configparser.ConfigParser()
 config.read('collection.conf')
 
+#set the veriables according to the config file
 addresses = (config['DEFAULT']['addresses']).split(',')
 user = config['DEFAULT']['username']
 password = config['DEFAULT']['password']
@@ -23,65 +25,47 @@ numretries = int(config['DEFAULT']['number_connection_retries'])
 retrydelay = int(config['DEFAULT']['connection_retry_delay'])
 warning_days = int(config['EMAIL']['warning_days'])
 
+#list veriables that will be used for email perposes
 failed_connections = []
 days_rem = []
 full_plcs = []
 
+#check to see of a download folder exists for the given path on the pc
+SPSLib.path_exist(destination)
 
 
-if not os.path.exists(destination):
-    os.makedirs(destination)
-
-
-
+#For each plc address, do the following 
 for address in addresses:
+    
+    #Check to see if a folder exists for the given plc address on the local pc
+    plc_dest = plc_dest = (destination + address + '\\')
+    SPSLib.path_exist(plc_dest)
 
-    plc_dest = destination + address + '\\'
-    if not os.path.exists(plc_dest):
-        os.makedirs(plc_dest)
-
-    success = False
-    ftp = 0
-    for n in range(0, numretries):
-        try:
-            ftp = FTP(address)
-            ftp.login(user=user, passwd=password)
-            success = True
-        except:
-            print('Connection Attempt ' + str(n+1) + ' to ' + address + ' Failed')
-            time.sleep(retrydelay)
-
-    if not success:
-        print('Error Connecting To PLC at ' + address)
+    #log in to the plc via ftp
+    try:
+        sps = SPSLib(address, user, password, default_destination=destination, numretries=numretries, retrydelay=retrydelay)
+    except SPSConnectionException as ex:
         failed_connections.append(address)
         continue
 
+    #finds days left before sps is full
+    days_left = sps.calulate_days_till_full(int(config['EMAIL']['SD_size']))
 
-
-    #file Size and days left calcualtor
-    SD_size = int(config['EMAIL']['SD_size'])
-    sps = SPSLib(ftp, default_destination=plc_dest)
-    tupleresult = sps.get_total_size('/')
-    totalusage = tupleresult[0]
-    totalusageMB = round(totalusage/(1024*1024), 2) 
-    avg_size = round(totalusageMB/tupleresult[1], 2)
-    size_left = round((SD_size - totalusageMB), 2)
-    days_left = int(size_left/avg_size)
+    #check to see of the plc storage will fill up with the given days 
     if days_left <= warning_days and days_left > 0:
         days_rem.append((address, days_left))
     elif days_left is 0:
         full_plcs.append(address)
 
+
+    #download files to the local pc storage
     files_before_download = os.listdir(plc_dest) # list out the target dir to get the list of old files
-    print("Downloading Files From SPS...")
     sps.download_files_for_month(datetime.datetime.now()) # download all files from the month
-    print("Done!")
     files_after_download = os.listdir(plc_dest) # get the new list of files 
     new_files = list(set(files_after_download) - set(files_before_download)) # isolate a list of files that are newly downloaded
-    print("Uploading Files To HostPoint...")
     hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password']) # Log into the hostpoint ftp server
     hp.upload_files([os.path.join(plc_dest, file) for file in new_files]) # Upload only the new files that have just been downloaded
-    print("Done!")
+
 
     sps.close_connection()
 
@@ -163,15 +147,14 @@ sender.quit()
 
 
 
-
-
-
+    # print("Downloading Files From SPS...")
+    # print("Uploading Files To HostPoint...")  
+    # print("Done!")
     # print ('print tuple: ' + str(tupleresult))
     # print ('Total Usage In MB: ' + str(totalusageMB) + 'MB')
     # print ('Avarage file size per day in MB: ' + str(avg_size) + 'MB')
     # print ('Size left before full: ' + str(size_left) + 'MB')
     # print ('Days left before storage is full: ' + str(days_left) + ' days')
-
-# print (failed_connections)
-# print (days_rem)
-# print (full_plcs)
+    # print (failed_connections)
+    # print (days_rem)
+    # print (full_plcs)

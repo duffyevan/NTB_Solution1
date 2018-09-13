@@ -54,7 +54,7 @@ class EMail:
     
     ## Returns a Template object comprising the contents of the file specified by filename.
     # @param filename {string} Path to the tempalte file to load
-    # @return TemplateThe template object to be used to construct emails
+    # @return Template The template object to be used to construct emails
     @staticmethod
     def read_template(filename):
         with open(filename, 'r', encoding='utf-8') as template_file:
@@ -63,7 +63,7 @@ class EMail:
 
     ## Return two lists names, emails containing names and email addresses read from a file specified by filename.
     # @param filename {string} Path to the tempalte file to load
-    # @return (names, emails)Tuple of contact names and corresponding contact emails
+    # @return (names, emails) Tuple of contact names and corresponding contact emails
     @staticmethod
     def get_contacts(filename):
         names = []
@@ -100,3 +100,61 @@ class EMailSender:
     ## Quit the SMTP connection
     def quit(self):
         self.smtp.quit()
+
+
+
+####Milap Code
+    ## Setup the email object by conneting to the email server and logging in as the sender
+    # @param server_address {string} The address of the email server
+    # @param server_port {string} Port number for the email server
+    # @param username {string} Senders username used to log in
+    # @param password {string} Senders password used to log in
+    # @return sender Object with the email server connection 
+    @staticmethod
+    def setup_email_sender(server_address, server_port, username, password):
+        sender = EMailSender(server_address, server_port)
+        sender.login(username, password)
+        return sender
+
+
+    ## Send Warning emails for connection failer and for PLC storage being full
+    # @param sender_address {string} Senders email address
+    # @param mailing_addresses {list[string, string]} List of recipients names and email addresses
+    # @param templet {templet} Templet that will be used for sending emails
+    # @param subject_line {string} Subject of the emails
+    # @param list_sps_addresses {list[numbers]} List of PLC address
+    def send_email(self, sender_address, mailing_addresses, templet, subject_line, list_sps_addresses):
+        message_template = EMail.read_template(templet)
+        for name, email in mailing_addresses:
+            body = message_template.substitute(user=name.title(), address=list_sps_addresses)
+            message = EMail(sender_address, email)
+            message.set_subject(subject_line)
+            message.set_body(body)
+            self.send_message(message)
+
+            # Prints out the message body for our sake
+            print(body)
+
+
+    ## Send Warning emails for connection failer and for PLC storage being full
+    # @param sender_address {string} Senders email address
+    # @param mailing_addresses {list[string, string]} List of recipients names and email addresses
+    # @param templet {templet} Templet that will be used for sending emails
+    # @param subject_line {string} Subject of the emails
+    # @param list_sps_addresses {list[numbers]} List of PLC address
+    # @param warning_days {number} Warning limit before the PLC storage will be full
+    def send_email_almost_full(self, sender_address, mailing_addresses, templet, subject_line, list_sps_addresses, warning_days):
+        message_template = EMail.read_template(templet)
+        for name, email in mailing_addresses:
+            body = message_template.substitute(user=name.title(), limit=warning_days)
+            addresses_string = ""
+            for address, days in list_sps_addresses:
+                addresses_string = addresses_string + address + " has " + str(days) + " days left.\r\n"                
+            body = body.replace("[[addresses]]", addresses_string)
+            message = EMail(sender_address, email)
+            message.set_subject(subject_line)
+            message.set_body(body)
+            self.send_message(message)
+            
+            # Prints out the message body for our sake
+            print(body)

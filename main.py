@@ -4,7 +4,7 @@ import os
 import datetime
 import configparser
 import smtplib
-from SPSLib import SPSLib
+from SPSLib import SPSLib, SPSConnectionException
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from EMailLib import EMail, EMailSender
@@ -28,27 +28,17 @@ days_rem = []
 full_plcs = []
 
 for address in addresses:
-    success = False
-    ftp = 0
-    for n in range(0, numretries):
-        try:
-            ftp = FTP(address)
-            ftp.login(user=user, passwd=password)
-            success = True
-        except:
-            print('Connection Attempt ' + str(n+1) + ' to ' + address + ' Failed')
-            time.sleep(retrydelay)
-
-    if not success:
-        print('Error Connecting To PLC at ' + address)
-        failed_connections.append(address)
-        continue
+    
 
 
 
     #file Size and days left calcualtor
     SD_size = int(config['EMAIL']['SD_size'])
-    sps = SPSLib(ftp, default_destination=destination)
+    try:
+        sps = SPSLib(address, user, password, default_destination=destination, numretries=numretries, retrydelay=retrydelay)
+    except SPSConnectionException as ex:
+        failed_connections.append(address)
+        continue
     tupleresult = sps.get_total_size('/')
     totalusage = tupleresult[0]
     totalusageMB = round(totalusage/(1024*1024), 2) 

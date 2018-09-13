@@ -1,4 +1,10 @@
 import os
+from ftplib import FTP
+import time
+
+class SPSConnectionException(Exception):
+    def __init__(self):
+        pass
 
 class SPSLib:
 
@@ -6,11 +12,28 @@ class SPSLib:
     # @param client {FTP} An FTP client to be used as the connection
     # @param default_destination {string} Path to where the files are automatically downloaded 
     # @return default_destination {string} Default download destination on the local storage. Defaults to the current working directory (default: {""} )
-    def __init__(self, client, default_destination=""):
-            
-        self.client = client
+    def __init__(self, address, username, password, default_destination="", numretries=1, retrydelay=1):
+        self.client = SPSLib._create_ftp_client(address, username, password, numretries, retrydelay)
         self.default_destination = default_destination
     
+    @staticmethod
+    def _create_ftp_client(address, username, password, numretries, retrydelay):
+        success = False
+        ftp = None
+        for n in range(0, numretries):
+            try:
+                ftp = FTP(address)
+                ftp.login(user=username, passwd=password)
+                success = True
+            except:
+                print('Connection Attempt ' + str(n+1) + ' to ' + address + ' Failed')
+                time.sleep(retrydelay)
+
+        if not success:
+            print('Error Connecting To PLC at ' + address)
+            raise SPSConnectionException()
+        return ftp    
+
     ## Change directory to the directory corresponding to the month of the date
     # @param date {datetime} The date to get the month from and change to the corresponding folder
     def change_to_date(self, date):

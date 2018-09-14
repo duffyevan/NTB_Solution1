@@ -104,7 +104,7 @@ class EMailSender:
 
 
 ####Milap Code
-    ## Setup the email object by conneting to the email server and logging in as the sender
+    ## Setup the email object by conneting to the email server and logging in as the sender.
     # @param server_address {string} The address of the email server
     # @param server_port {string} Port number for the email server
     # @param username {string} Senders username used to log in
@@ -117,7 +117,7 @@ class EMailSender:
         return sender
 
 
-    ## Send Warning emails for connection failer and for PLC storage being full
+    ## Send Warning emails for connection failer and for PLC storage being full.
     # @param sender_address {string} Senders email address
     # @param mailing_addresses {list[string, string]} List of recipients names and email addresses
     # @param templet {templet} Templet that will be used for sending emails
@@ -136,7 +136,7 @@ class EMailSender:
             print(body)
 
 
-    ## Send Warning emails for connection failer and for PLC storage being full
+    ## Send Warning emails PLC storage almost full.
     # @param sender_address {string} Senders email address
     # @param mailing_addresses {list[string, string]} List of recipients names and email addresses
     # @param templet {templet} Templet that will be used for sending emails

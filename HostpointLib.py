@@ -42,7 +42,7 @@ class HostpointClient:
     #####Milap Changes
     ##
 
-    ## Logs into Host Point and uploads new files to it
+    ## Logs into Host Point and uploads new files to it.
     # @param hostname {string} Name name of the host (Their login address)
     # @param username {string} Username used for login
     # @param password {string} Password used for login

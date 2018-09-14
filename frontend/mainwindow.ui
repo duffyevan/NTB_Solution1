@@ -26,6 +26,9 @@
     <property name="value">
      <number>0</number>
     </property>
+    <property name="format">
+     <string/>
+    </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
@@ -44,10 +47,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QDateEdit" name="yearSelector">
-       <property name="displayFormat">
-        <string>yyyy</string>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="pushButtonDownloadForMonth">
+       <property name="text">
+        <string>Download For Month</string>
        </property>
       </widget>
      </item>
@@ -61,10 +64,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButtonDownloadForMonth">
-       <property name="text">
-        <string>Download For Month</string>
+     <item row="3" column="0">
+      <widget class="QDateEdit" name="yearSelector">
+       <property name="displayFormat">
+        <string>yyyy</string>
        </property>
       </widget>
      </item>
@@ -75,7 +78,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0" colspan="2">
+     <item row="0" column="0">
       <widget class="QScrollArea" name="scrollArea">
        <property name="widgetResizable">
         <bool>true</bool>
@@ -85,20 +88,27 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>357</width>
+          <width>244</width>
           <height>140</height>
          </rect>
         </property>
         <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
           <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>361</width>
+           <x>-1</x>
+           <y>-1</y>
+           <width>251</width>
            <height>141</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout"/>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>6</number>
+          </property>
+          <property name="topMargin">
+           <number>8</number>
+          </property>
+         </layout>
         </widget>
        </widget>
       </widget>
@@ -119,16 +129,15 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuConfigoration">
+   <widget class="QMenu" name="menuConfiguration">
     <property name="title">
      <string>Configuration</string>
     </property>
     <addaction name="openConfFileButton"/>
    </widget>
    <addaction name="menuNTB_Datacollection_Automation"/>
-   <addaction name="menuConfigoration"/>
+   <addaction name="menuConfiguration"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openConfFileButton">
@@ -139,6 +148,16 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionSetup_Scheduled_Task">
+   <property name="text">
+    <string>Setup Scheduled Task</string>
+   </property>
+  </action>
+  <action name="actionReload_Configuration_File">
+   <property name="text">
+    <string>Reload Configuration File</string>
    </property>
   </action>
  </widget>

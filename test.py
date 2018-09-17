@@ -54,7 +54,7 @@ for address in addresses:
     #check to see of the plc storage will fill up with the given days 
     if days_left <= warning_days and days_left > 0:
         days_rem.append((address, days_left))
-    elif days_left is 0:
+    elif days_left <= 0:
         full_plcs.append(address)
 
 

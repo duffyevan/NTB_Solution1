@@ -121,10 +121,9 @@ class SPSLib:
     # @return days_left Days left before PLC is full
     def calulate_days_till_full(self, SD_size):
         tupleresult = self.get_total_size('/')
-        totalusage = tupleresult[0]
-        totalusageMB = round(totalusage/(1024*1024), 2) 
-        avg_size = round(totalusageMB/tupleresult[1], 2)
-        size_left = round((SD_size - totalusageMB), 2)
+        totalusage = round((tupleresult[0])/(1024*1024), 2)
+        avg_size = round(totalusage/tupleresult[1], 2)
+        size_left = round((SD_size - totalusage), 2)
         days_left = int(size_left/avg_size)
         return days_left
 

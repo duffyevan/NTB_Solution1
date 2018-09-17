@@ -43,7 +43,7 @@ for address in addresses:
 
     #log in to the plc via ftp
     try:
-        sps = SPSLib(address, user, password, default_destination=destination, numretries=numretries, retrydelay=retrydelay)
+        sps = SPSLib(address, user, password, default_destination=plc_dest, numretries=numretries, retrydelay=retrydelay)
     except SPSConnectionException as ex:
         failed_connections.append(address)
         continue

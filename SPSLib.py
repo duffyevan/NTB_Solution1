@@ -72,7 +72,7 @@ class SPSLib:
             raise Exception('No Files Available For Date ' + datestring)
 
     ## List the contents of the current directory on the PLC
-    # @param list[string]a list of file names corresponding to the files in the current working directory 
+    # @param list[string] a list of file names corresponding to the files in the current working directory 
     def ls(self):
         return self.client.nlst()
 
@@ -116,7 +116,7 @@ class SPSLib:
 
 ####Milap changes##
 
-    ## Calculates the number of days left before the PLC storage is expected to be full 
+    ## Calculates the number of days left before the PLC storage is expected to be full.
     # @param SD_size {intiger} Size of the storage on the PLC in MB
     # @return days_left Days left before PLC is full
     def calulate_days_till_full(self, SD_size):
@@ -137,7 +137,7 @@ class SPSLib:
             os.makedirs(destination)
 
 
-    ## Downloads all the files for a given month form the sps into the local directory on the pc
+    ## Downloads all the files for a given month form the sps into the local directory on the pc.
     # @param destination {string} Path to the directory on the local storage
     # @param datetime {string} Date of the month that will be downloaded
     # @return new_files List of new files

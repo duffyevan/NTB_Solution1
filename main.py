@@ -12,128 +12,77 @@ from HostpointLib import HostpointClient
 import time
 
 
+#setup reading the config file
 config = configparser.ConfigParser()
 config.read('collection.conf')
 
+#set the veriables according to the config file
 addresses = (config['DEFAULT']['addresses']).split(',')
 user = config['DEFAULT']['username']
 password = config['DEFAULT']['password']
-destination = config['DEFAULT']['default_destination']
+destination = config['DEFAULT']['default_destination'].replace("~", "c:\\Users\\" + os.getlogin())
 numretries = int(config['DEFAULT']['number_connection_retries'])
 retrydelay = int(config['DEFAULT']['connection_retry_delay'])
 warning_days = int(config['EMAIL']['warning_days'])
 
+#list veriables that will be used for email perposes
 failed_connections = []
 days_rem = []
 full_plcs = []
 
+#check to see of a download folder exists for the given path on the pc
+SPSLib.path_exist(destination)
+
+
+#For each plc address, do the following 
 for address in addresses:
     
+    #Check to see if a folder exists for the given plc address on the local pc
+    plc_dest = plc_dest = (destination + address + '\\')
+    SPSLib.path_exist(plc_dest)
 
-
-
-    #file Size and days left calcualtor
-    SD_size = int(config['EMAIL']['SD_size'])
+    #log in to the plc via ftp
     try:
-        sps = SPSLib(address, user, password, default_destination=destination, numretries=numretries, retrydelay=retrydelay)
+        sps = SPSLib(address, user, password, default_destination=plc_dest, numretries=numretries, retrydelay=retrydelay)
     except SPSConnectionException as ex:
         failed_connections.append(address)
         continue
-    tupleresult = sps.get_total_size('/')
-    totalusage = tupleresult[0]
-    totalusageMB = round(totalusage/(1024*1024), 2) 
-    avg_size = round(totalusageMB/tupleresult[1], 2)
-    size_left = round((SD_size - totalusageMB), 2)
-    days_left = int(size_left/avg_size)
+
+    #finds days left before sps is full
+    days_left = sps.calulate_days_till_full(int(config['EMAIL']['SD_size']))
+
+    #check to see of the plc storage will fill up with the given days 
     if days_left <= warning_days and days_left > 0:
         days_rem.append((address, days_left))
-    elif days_left is 0:
+    elif days_left <= 0:
         full_plcs.append(address)
 
-    files_before_download = os.listdir(destination) # list out the target dir to get the list of old files
-    print("Downloading Files From SPS...")
-    sps.download_files_for_month(datetime.datetime.now()) # download all files from the month
-    print("Done!")
-    files_after_download = os.listdir(destination) # get the new list of files 
-    new_files = list(set(files_after_download) - set(files_before_download)) # isolate a list of files that are newly downloaded
-    print("Uploading Files To HostPoint...")
-    hp = HostpointClient(config['HOSTPOINT']['hostname'],config['HOSTPOINT']['username'],config['HOSTPOINT']['password']) # Log into the hostpoint ftp server
-    hp.upload_files([os.path.join(destination, file) for file in new_files]) # Upload only the new files that have just been downloaded
-    print("Done!")
 
+    #download files to the local pc storage
+    new_files = sps.download_files_to_pc(plc_dest, datetime.datetime.now())
+
+    #upload new files to Host Point
+    HostpointClient.upload_to_Hostpoint(config['HOSTPOINT']['hostname'], config['HOSTPOINT']['username'], config['HOSTPOINT']['password'], plc_dest, new_files)
+
+    #disconnect from the plc
     sps.close_connection()
 
 
+#parse the email recipient text file
+names, emails = EMail.get_contacts('email_templates/email_addresses.txt')
 
+#log into the email
+sender = EMailSender.setup_email_sender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'], config['EMAIL']['username'], config['EMAIL']['password'])
 
-"""
-Send Warning Emails
-"""
-
-names, emails = EMail.get_contacts('email_templates/email_addresses.txt') # read contacts
-
-sender = EMailSender(config['EMAIL']['smtp_server'], config['EMAIL']['smtp_port'])
-sender.login(config['EMAIL']['username'],config['EMAIL']['password'])
-
+#send the emails
 if len(failed_connections) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/ConnectionError.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=failed_connections)
-        
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPS Connection Error")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/ConnectionError.temp', "SPS Connection Error", failed_connections)
 
 if len(full_plcs) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/SPS_FullWarning.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=full_plcs)
-        
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPSs Are Full")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/SPS_FullWarning.temp', "SPSs Are Full", full_plcs)
 
 if len(days_rem) > 0:
-    # For each contact, send the email:
-    message_template = EMail.read_template('email_templates/DaysLeftWarning.temp')
-    for name, email in zip(names, emails):
-
-        # add in the actual person name to the message template
-        body = message_template.substitute(user=name.title(), address=full_plcs, limit=config['EMAIL']['warning_days'])
-        
-        addresses_string = ""
-        for address, days in days_rem:
-            addresses_string = addresses_string + address + " has " + str(days) + " days left.\r\n" 
-
-        body = body.replace("[[addresses]]", addresses_string)
-
-        message = EMail(config['EMAIL']['username'], email)
-        message.set_subject("SPSs Are Almost Full")
-        message.set_body(body)
-
-        # send the message via the server set up earlier.
-        sender.send_message(message)
-
-        # Prints out the message body for our sake
-        print(body)
+    sender.send_email_almost_full(config['EMAIL']['username'], zip(names, emails), 'email_templates/DaysLeftWarning.temp', "SPSs Are Almost Full", days_rem, config['EMAIL']['warning_days'])
 
 # Terminate the SMTP session and close the connection
 sender.quit()

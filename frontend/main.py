@@ -13,19 +13,20 @@ from data_collection_automation.frontend.ConfigManager import ConfigManager
 from data_collection_automation.frontend.mainwindow import Ui_MainWindow
 
 config_file_path = '~\\Documents\\MQP\\code\\data_collection_automation\\collection.conf'.replace('~',
-                                                                                                  'c:\\Users\\' + os.getlogin())
+                                                                                         'c:\\Users\\' + os.getlogin())
 
 
 class Main(QObject):
     window = None
     ui = None
-    config = ConfigManager(config_file_path)
+    config = None
     checkBoxes: List[QCheckBox] = []
     showDialogSignal = pyqtSignal(str, str)
 
     def __init__(self):
         super(Main, self).__init__()
         self.ui = None
+        self.config = ConfigManager(config_file_path)
 
     def SPSFactory(self, host):
         return SPSLib(host, self.config.SPSuser, self.config.SPSpassword, numretries=3,

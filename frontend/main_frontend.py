@@ -13,7 +13,7 @@ from data_collection_automation.frontend.ConfigManager import ConfigManager
 from data_collection_automation.frontend.mainwindow import Ui_MainWindow
 
 config_file_path = '~\\Documents\\MQP\\code\\data_collection_automation\\collection.conf'.replace('~',
-                                                                                         'c:\\Users\\' + os.getlogin())
+                                                                                                  'c:\\Users\\' + os.getlogin())
 
 
 class Main(QObject):
@@ -30,12 +30,10 @@ class Main(QObject):
         self.ui = None
         self.config = ConfigManager(config_file_path)
 
+    ## Helper for creating a SPS object. Uses default username, password and settings
+    # @param host the hostname (or IP address) of the SPS to be connected to
+    # @return the SPS object
     def SPSFactory(self, host):
-        """
-        Helper for creating a SPS object. Uses default username, password and settings
-        @param host: the hostname (or IP address) of the SPS to be connected to
-        @return: the SPS object
-        """
         return SPSLib(host, self.config.SPSuser, self.config.SPSpassword, numretries=3,
                       retrydelay=1,
                       default_destination=self.config.downloaddestination)  # Create an SPS client that will try to connect 3 times waiting 1 second on each failed attempt
@@ -51,21 +49,30 @@ class Main(QObject):
     def reload_conf_file(self):
         pass
 
+    ## Installs the cron job on the users PC
+    # Not yet implemented
     def install_scheduled_task(self):
         pass  # TODO Implement this...
 
+    ## Threaded option for download for day
     def threadDownloadForDay(self):
         Thread(target=self.downloadFilesForDay).start()
 
+    ## Threaded option for download for month
     def threadDownloadForMonth(self):
         Thread(target=self.downloadFilesForMonth).start()
 
+    ## Threaded option for download for year
     def threadDownloadForYear(self):
         Thread(target=self.downloadFilesForYear).start()
 
+    ## Threaded function tied to a signal for showing a dialog with the given informaiton
+    # @param title The title of the dialog
+    # @param message The message of the dialog
     def showDialog(self, title, message):
         QMessageBox.about(self.window, title, message)
 
+    ## Download all files for a given day
     def downloadFilesForDay(self):
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
@@ -97,6 +104,7 @@ class Main(QObject):
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
 
+    ## Download all files for a given month
     def downloadFilesForMonth(self):
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
@@ -128,6 +136,7 @@ class Main(QObject):
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
 
+    ## Download all files for a given year
     def downloadFilesForYear(self):
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
@@ -164,6 +173,8 @@ class Main(QObject):
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
 
+    ## Iterate through the list of checkboxes and get a list of all those selected
+    # @return An array of strings containing the addresses
     def getSelectedHosts(self):
         selected_addresses: List[str] = []
         for checkBox in self.checkBoxes:
@@ -171,17 +182,23 @@ class Main(QObject):
                 selected_addresses.append(checkBox.text())  # TODO FIXME this is bad
         return selected_addresses
 
-    def setCheckedAllHosts(self, selected):
+    ## Set all checkboxes' checked values to a given value
+    # @param selected Boolean to set the checked values to
+    def setCheckedAllHosts(self, selected: bool):
         for checkBox in self.checkBoxes:
             checkBox.setChecked(selected)
 
+    ## Check all the host check boxes
     def selectAllHosts(self):
         self.setCheckedAllHosts(True)
 
+    ## Uncheck all the host check boxes
     def disselectAllHosts(self):
         self.setCheckedAllHosts(False)
 
-    def setProgressBarEnabled(self, enabled):
+    ## Set the enabled status of the master progress bar. Enabled makes it pulsing and green. Disabled makes it greyed out
+    # @param enabled the boolean value whether its enabled or not
+    def setProgressBarEnabled(self, enabled: bool):
         if enabled:
             self.ui.masterProgressBar.setRange(0, 0)
             self.ui.masterProgressBar.setEnabled(True)
@@ -189,6 +206,8 @@ class Main(QObject):
             self.ui.masterProgressBar.setRange(0, 10)
             self.ui.masterProgressBar.setDisabled(True)
 
+    ## Sets the enabled status of all the buttons that can create a thread. Used to prevent multiple async downloads
+    # @param enabled the boolean value whether its enabled or not
     def setAllButtonsEnabled(self, enabled):
         if enabled:
             self.ui.pushButtonDownloadForDay.setEnabled(True)
@@ -199,6 +218,7 @@ class Main(QObject):
             self.ui.pushButtonDownloadForMonth.setEnabled(False)
             self.ui.pushButtonDownloadForYear.setEnabled(False)
 
+    ## Set up the UI elements and do any needed config setup before starting the UI
     def setup_ui(self):
         self.ui.pushButtonDownloadForDay.clicked.connect(self.threadDownloadForDay)
         self.ui.pushButtonDownloadForMonth.clicked.connect(self.threadDownloadForMonth)

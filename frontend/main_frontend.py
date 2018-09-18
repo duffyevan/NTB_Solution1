@@ -23,21 +23,31 @@ class Main(QObject):
     checkBoxes: List[QCheckBox] = []
     showDialogSignal = pyqtSignal(str, str)
 
+    ## Constructor
+    # Loads configuration and initializes superclass
     def __init__(self):
         super(Main, self).__init__()
         self.ui = None
         self.config = ConfigManager(config_file_path)
 
     def SPSFactory(self, host):
+        """
+        Helper for creating a SPS object. Uses default username, password and settings
+        @param host: the hostname (or IP address) of the SPS to be connected to
+        @return: the SPS object
+        """
         return SPSLib(host, self.config.SPSuser, self.config.SPSpassword, numretries=3,
                       retrydelay=1,
                       default_destination=self.config.downloaddestination)  # Create an SPS client that will try to connect 3 times waiting 1 second on each failed attempt
 
+    ## Opens the configuration in Notepad so the user can edit it.
     def open_conf_file(self):
         # Thread(target=os.system, args=("notepad " + config_file_path,)).start()
         os.system("notepad " + config_file_path)
         QMessageBox.about(self.window, "Notice", "Please Restart The Program For Changes To Take Effect")
 
+    ## Reloads the configuration file
+    # Not yet implemented
     def reload_conf_file(self):
         pass
 

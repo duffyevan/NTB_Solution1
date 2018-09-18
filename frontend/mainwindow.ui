@@ -6,25 +6,52 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>861</width>
-    <height>621</height>
+    <width>385</width>
+    <height>326</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>385</width>
+    <height>326</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>385</width>
+    <height>326</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>NTB Data Collection Automation</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <widget class="QProgressBar" name="masterProgressBar">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>530</y>
-      <width>561</width>
+      <y>250</y>
+      <width>361</width>
       <height>23</height>
      </rect>
     </property>
     <property name="value">
      <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>false</bool>
     </property>
     <property name="format">
      <string/>
@@ -34,50 +61,12 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>290</y>
+      <y>10</y>
       <width>361</width>
       <height>231</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="1">
-      <widget class="QPushButton" name="pushButtonDownloadForDay">
-       <property name="text">
-        <string>Download For Day</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButtonDownloadForMonth">
-       <property name="text">
-        <string>Download For Month</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QDateEdit" name="daySelector"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="pushButtonDownloadForYear">
-       <property name="text">
-        <string>Download For Year</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QDateEdit" name="yearSelector">
-       <property name="displayFormat">
-        <string>yyyy</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QDateEdit" name="monthSelector">
-       <property name="displayFormat">
-        <string>M/yyyy</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QScrollArea" name="scrollArea">
        <property name="widgetResizable">
@@ -113,6 +102,62 @@
        </widget>
       </widget>
      </item>
+     <item row="4" column="1">
+      <widget class="QPushButton" name="pushButtonDownloadForDay">
+       <property name="text">
+        <string>Download For Day</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QPushButton" name="pushButtonDownloadForMonth">
+       <property name="text">
+        <string>Download For Month</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QDateEdit" name="daySelector"/>
+     </item>
+     <item row="6" column="1">
+      <widget class="QPushButton" name="pushButtonDownloadForYear">
+       <property name="text">
+        <string>Download For Year</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QDateEdit" name="yearSelector">
+       <property name="displayFormat">
+        <string>yyyy</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QDateEdit" name="monthSelector">
+       <property name="displayFormat">
+        <string>M/yyyy</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QPushButton" name="pushButtonSelectAll">
+         <property name="text">
+          <string>Select All</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonDisselectAll">
+         <property name="text">
+          <string>Disselect All</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -121,7 +166,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>861</width>
+     <width>385</width>
      <height>21</height>
     </rect>
    </property>

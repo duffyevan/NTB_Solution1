@@ -65,7 +65,7 @@ for address in addresses:
     #check to see of the plc storage will fill up with the given days 
     if days_left <= warning_days and days_left > 0:
         days_rem.append((address, days_left))
-        logging.warn("SPS at " + address + " is nearly full!")
+        logging.warning("SPS at " + address + " is nearly full!")
     elif days_left <= 0:
         full_plcs.append(address)
         logging.error("SPS at " + address + " is full!")
@@ -92,15 +92,15 @@ sender = EMailSender.setup_email_sender(config['EMAIL']['smtp_server'], config['
 
 #send the emails
 if len(failed_connections) > 0:
-    logging.warn("Sending warning emails about failed connections")
+    logging.warning("Sending warning emails about failed connections")
     sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/ConnectionError.temp', "SPS Connection Error", failed_connections)
 
 if len(full_plcs) > 0:
-    logging.warn("Sending warning emails about full SPSs")
+    logging.warning("Sending warning emails about full SPSs")
     sender.send_email(config['EMAIL']['username'], zip(names, emails), 'email_templates/SPS_FullWarning.temp', "SPSs Are Full", full_plcs)
 
 if len(days_rem) > 0:
-    logging.warn("Sending warning emails about almost full SPSs")
+    logging.warning("Sending warning emails about almost full SPSs")
     sender.send_email_almost_full(config['EMAIL']['username'], zip(names, emails), 'email_templates/DaysLeftWarning.temp', "SPSs Are Almost Full", days_rem, config['EMAIL']['warning_days'])
 
 logging.info("Closing SMTP connection")

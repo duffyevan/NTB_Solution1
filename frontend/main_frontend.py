@@ -44,6 +44,14 @@ class Main(QObject):
         os.system("notepad " + config_file_path)
         QMessageBox.about(self.window, "Notice", "Please Restart The Program For Changes To Take Effect")
 
+    def open_log_file(self):
+        log = self.config.logfilelocation
+        if os.path.isfile("../" + log) and not os.path.isfile(log):
+            log = "../" + log
+        Thread(target=os.system, args=("notepad " + log,)).start()
+        # os.system("notepad " + config_file_path)
+        # QMessageBox.about(self.window, "Notice", "Please Restart The Program For Changes To Take Effect")
+
     ## Reloads the configuration file
     # Not yet implemented
     def reload_conf_file(self):
@@ -232,6 +240,7 @@ class Main(QObject):
         self.ui.yearSelector.setDate(QDate(datetime.datetime.today()))
 
         self.ui.openConfFileButton.triggered.connect(self.open_conf_file)
+        self.ui.openLogFileButton.triggered.connect(self.open_log_file)
 
         self.checkBoxes.clear()
 

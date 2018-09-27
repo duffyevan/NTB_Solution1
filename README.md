@@ -1,5 +1,9 @@
 # NTB WPZ Automation
-Automating the data collection process from SPS (PLC) modules in the field.
+Automating the data collection process from SPS (PLC) modules in the field. This program is more of an 'in case of 
+emergency' tool that can download files from SPSs in the field. There are, however, big caveats which are discussed 
+below that arose because LinkManager couldn't be set up the way we wanted due to license issues. In tue future, 
+setting up software such as log tunnel could greatly increase the usefulness of this software but for the time being 
+it is just a side tool for emergencies or other unusual situations.
 
 
 
@@ -9,26 +13,34 @@ This section will walk you through the steps required to get the program up and 
 If python is not already installed, please follow these instructions:
 
 The program is written for python 3, specifically 3.5 and above. 
-1. Go To [The Python Install Page](https://www.python.org/downloads/) and chose the most recent version of python3 (currently 3.7)
-2. Run the installer that is downloaded, and follow the steps for a default installation (if asked, make sure you add python to PATH and associate .py files with the python launcher, these should be done by default)
+1. Go To [The Python Install Page](https://www.python.org/downloads/) and chose the most recent version of python3 
+(currently 3.7)
+2. Run the installer that is downloaded, and follow the steps for a default installation (if asked, make sure you add 
+python to PATH and associate .py files with the python launcher, these should be done by default)
     1. If prompted, make sure you chose to install `pip` as well.
-3. Open up CMD and make sure python is in the path by running python (or python3 if that doesn't work). If a prompt comes up, then python is installed correctly. Type `exit()` to close python.
+3. Open up CMD and make sure python is in the path by running python (or python3 if that doesn't work). If a prompt 
+comes up, then python is installed correctly. Type `exit()` to close python.
 
 
 ### Installing Required Python Packages
-1. In the command window, naviage to the `NTB-WPZ-Automation` folder that came out of the zip file and then navigate to the `Setup` folder.
+1. In the command window, navigate to the `NTB-WPZ-Automation` folder that came out of the zip file and then navigate to
+the `Setup` folder.
 2. Run the command `python -m pip -r requirements.txt` to install the required packages.
     1. You may need to have admin privileges to run this command. If so, reopen CMD in administrator mode
 
 ### Installing LinkManager
 1. Grab the latest version of LinkManager at the [B&R Automation Download Page](https://www.br-automation.com/en/downloads/#categories=Software/Remote+Maintenance/LinkManager)
 2. Run the installer as an administrator and let it go through the default installation.
-3. Once installed, there should be a LinkManager shortcut in the Start Menu or on the Desktop. Give it a try to make sure it starts up.
-    1. LinkManager runs in the app tray in the bottom right of the screen in Windows. Once it has fully loaded it will open an internet browser page with a console.
+3. Once installed, there should be a LinkManager shortcut in the Start Menu or on the Desktop. Give it a try to make 
+sure it starts up.
+    1. LinkManager runs in the app tray in the bottom right of the screen in Windows. Once it has fully loaded it will 
+    open an internet browser page with a console.
     
 ### Getting a Certificate For LinkManager
-1. The Certificate must be obtained from someone at NTB who owns the license. Currently (27/9/2018) that person is Rupert Fritz.
-2. Once the certificate is obtained, open the console of LinkManager and upload the cert file using the interface, then enter the password linked to the certificate.
+1. The Certificate must be obtained from someone at NTB who owns the license. Currently (27/9/2018) that person is 
+Rupert Fritz.
+2. Once the certificate is obtained, open the console of LinkManager and upload the cert file using the interface, then 
+enter the password linked to the certificate.
 
 ### Configuring The Program
 Before running the program, you must first configure the settings. In the User directory, open up `collection.conf`. 
@@ -44,7 +56,8 @@ upload can be done automatically (Note: The GUI program will not automatically u
 
 ### Creating A Shortcut to The Main Program
 You're almost there! All that needs to be done now is creating an easy way to launch the program. 
-1. Navigate to the `NTB-WPZ-Automation` folder that came out of the zip file and then navigate to the `ProgramFiles` folder.
+1. Navigate to the `NTB-WPZ-Automation` folder that came out of the zip file and then navigate to the `ProgramFiles` 
+folder.
 2. Right click the `main_frontend.py` file, and chose `Send To... -> Desktop (Create Shortcut)`.
 3. Rename the shortcut on the desktop to something memorable
 

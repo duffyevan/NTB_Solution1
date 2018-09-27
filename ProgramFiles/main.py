@@ -1,20 +1,14 @@
-from ftplib import FTP
-import sys
-import os
-import datetime
 import configparser
-import smtplib
-from SPSLib import SPSLib, SPSConnectionException
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import datetime
+import os
+
 from EMailLib import EMail, EMailSender
 from HostpointLib import HostpointClient
-import time
-
+from SPSLib import SPSLib, SPSConnectionException
 
 #setup reading the config file
 config = configparser.ConfigParser()
-config.read('collection.conf')
+config.read('../User/collection.conf')
 
 #set the veriables according to the config file
 addresses = (config['DEFAULT']['addresses']).split(',')

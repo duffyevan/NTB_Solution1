@@ -8,12 +8,11 @@ from typing import List
 from PyQt5.QtCore import QDate, pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QMessageBox, QWidget, QVBoxLayout
 
-from ProgramFiles.SPSLib import SPSConnectionException, SPSLib
-from ProgramFiles.frontend.ConfigManager import ConfigManager
-from ProgramFiles.frontend.mainwindow import Ui_MainWindow
+from SPSLib import SPSLib, SPSConnectionException
+from frontend.ConfigManager import ConfigManager
+from frontend.mainwindow import Ui_MainWindow
 
-config_file_path = '~\\Documents\\MQP\\code\\data_collection_automation\\collection.conf'.replace('~',
-                                                                                                  'c:\\Users\\' + os.getlogin())
+config_file_path = '../User/collection.conf'.replace('~', 'c:\\Users\\' + os.getlogin())
 
 
 class Main(QObject):
@@ -265,6 +264,7 @@ class Main(QObject):
 
 
 if __name__ == '__main__':
+# def run():
     main = Main()
     app = QApplication(sys.argv)
     main.window = QMainWindow()

@@ -14,3 +14,4 @@ class ConfigManager:
         self.connectionnumretries = int(self.__config['DEFAULT']['number_connection_retries'])
         self.connectionretrydelay = int(self.__config['DEFAULT']['connection_retry_delay'])
         self.SPSfullwarningdays = int(self.__config['EMAIL']['warning_days'])
+        self.log_path = self.__config['DEFAULT']['log_path']

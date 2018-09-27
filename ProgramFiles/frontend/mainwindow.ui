@@ -181,8 +181,15 @@
     </property>
     <addaction name="openConfFileButton"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="openLogFileButton"/>
+   </widget>
    <addaction name="menuNTB_Datacollection_Automation"/>
    <addaction name="menuConfiguration"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openConfFileButton">

@@ -1,3 +1,4 @@
+import logging
 from ftplib import FTP
 import os
 
@@ -11,11 +12,13 @@ class HostpointClient:
     def __init__(self, hostname, username, password):
         self.client = FTP(hostname)
         self.client.login(username, password)
+        logging.info("Logged into HostPoint")
 
     ## Upload a single file from the local storage to the FTP server
     # @param filename {string} Path to the file on the local storage to upload
 
     def upload_file(self, filename):
+        logging.info("Uploading " + filename)
         file = open(filename, 'rb')
         self.client.storbinary('STOR %s' % os.path.basename(filename), file)
         file.close()
@@ -36,6 +39,7 @@ class HostpointClient:
 
     ## Close the connection with HostPoint server
     def close(self):
+        logging.info("Closing connection to HostPoint")
         self.client.close()
 
 

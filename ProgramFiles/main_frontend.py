@@ -4,6 +4,7 @@ import os
 import sys
 from threading import Thread
 from typing import List
+import logging
 
 from PyQt5.QtCore import QDate, pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication, QMainWindow, QCheckBox, QMessageBox, QWidget, QVBoxLayout
@@ -28,6 +29,8 @@ class Main(QObject):
         super(Main, self).__init__()
         self.ui = None
         self.config = ConfigManager(config_file_path)
+        logging.basicConfig(filename=self.config.log_path, level=logging.INFO, format='%(asctime)s: %(levelname)s : %(message)s')
+        logging.info("Starting...")
 
     ## Helper for creating a SPS object. Uses default username, password and settings
     # @param host the hostname (or IP address) of the SPS to be connected to
@@ -44,10 +47,7 @@ class Main(QObject):
         QMessageBox.about(self.window, "Notice", "Please Restart The Program For Changes To Take Effect")
 
     def open_log_file(self):
-        log = self.config.logfilelocation
-        if os.path.isfile("../" + log) and not os.path.isfile(log):
-            log = "../" + log
-        Thread(target=os.system, args=("notepad " + log,)).start()
+        Thread(target=os.system, args=("notepad " + self.config.log_path,)).start()
         # os.system("notepad " + config_file_path)
         # QMessageBox.about(self.window, "Notice", "Please Restart The Program For Changes To Take Effect")
 
@@ -81,6 +81,8 @@ class Main(QObject):
 
     ## Download all files for a given day
     def downloadFilesForDay(self):
+        logging.info("Initiated Download For Day")
+
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
 
@@ -96,6 +98,7 @@ class Main(QObject):
                 self.setProgressBarEnabled(False)
 
                 self.showDialogSignal.emit("Error!", "Error Connecting To SPS With Address " + host)
+                logging.error("Error Connecting To SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
             except ftplib.all_errors:
@@ -103,16 +106,20 @@ class Main(QObject):
 
                 self.showDialogSignal.emit("Error!",
                                            "An FTP Error Occurred Communicating With SPS With Address " + host + ". Make Sure The Files You Are Looking For Exist")
+                logging.error("An Unknown Error Occurred Communicating With SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
 
         self.showDialogSignal.emit("Done!", "Download Process Is Complete")
+        logging.info("Download Process Is Complete")
 
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
 
     ## Download all files for a given month
     def downloadFilesForMonth(self):
+        logging.info("Initiated Download For Month")
+
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
 
@@ -128,6 +135,7 @@ class Main(QObject):
                 self.setProgressBarEnabled(False)
 
                 self.showDialogSignal.emit("Error!", "Error Connecting To SPS With Address " + host)
+                logging.error("Error Connecting To SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
             except ftplib.all_errors:
@@ -135,16 +143,19 @@ class Main(QObject):
 
                 self.showDialogSignal.emit("Error!",
                                            "An FTP Error Occurred Communicating With SPS With Address " + host + ". Make Sure The Files You Are Looking For Exist")
+                logging.error("An Unknown Error Occurred Communicating With SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
 
         self.showDialogSignal.emit("Done!", "Download Process Is Complete")
+        logging.info("Download Process Is Complete")
 
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
 
     ## Download all files for a given year
     def downloadFilesForYear(self):
+        logging.info("Initiated Download For Year")
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
 
@@ -165,6 +176,7 @@ class Main(QObject):
                 self.setProgressBarEnabled(False)
 
                 self.showDialogSignal.emit("Error!", "Error Connecting To SPS With Address " + host)
+                logging.error("Error Connecting To SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
             except:
@@ -172,10 +184,12 @@ class Main(QObject):
 
                 self.showDialogSignal.emit("Error!",
                                            "An Unknown Error Occurred Communicating With SPS With Address " + host)
+                logging.error("An Unknown Error Occurred Communicating With SPS With Address " + host)
 
                 self.setProgressBarEnabled(True)
 
         self.showDialogSignal.emit("Done!", "Download Process Is Complete")
+        logging.info("Download Process Is Complete")
 
         self.setProgressBarEnabled(False)
         self.setAllButtonsEnabled(True)
@@ -227,6 +241,7 @@ class Main(QObject):
 
     ## Set up the UI elements and do any needed config setup before starting the UI
     def setup_ui(self):
+        logging.debug("Setting Up UI")
         self.ui.pushButtonDownloadForDay.clicked.connect(self.threadDownloadForDay)
         self.ui.pushButtonDownloadForMonth.clicked.connect(self.threadDownloadForMonth)
         self.ui.pushButtonDownloadForYear.clicked.connect(self.threadDownloadForYear)
@@ -239,7 +254,7 @@ class Main(QObject):
         self.ui.yearSelector.setDate(QDate(datetime.datetime.today()))
 
         self.ui.openConfFileButton.triggered.connect(self.open_conf_file)
-        # self.ui.openLogFileButton.triggered.connect(self.open_log_file)
+        self.ui.openLogFileButton.triggered.connect(self.open_log_file)
 
         self.checkBoxes.clear()
 
@@ -272,4 +287,5 @@ if __name__ == '__main__':
     main.ui.setupUi(main.window)
     main.setup_ui()
     main.window.show()
+    logging.debug("Handing Process Over To UI Thread...")
     sys.exit(app.exec_())

@@ -205,6 +205,11 @@
     <string>Reload Configuration File</string>
    </property>
   </action>
+  <action name="openLogFileButton">
+   <property name="text">
+    <string>Open Log</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

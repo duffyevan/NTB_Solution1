@@ -239,7 +239,7 @@ class Main(QObject):
         self.ui.yearSelector.setDate(QDate(datetime.datetime.today()))
 
         self.ui.openConfFileButton.triggered.connect(self.open_conf_file)
-        self.ui.openLogFileButton.triggered.connect(self.open_log_file)
+        # self.ui.openLogFileButton.triggered.connect(self.open_log_file)
 
         self.checkBoxes.clear()
 

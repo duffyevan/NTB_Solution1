@@ -18,11 +18,10 @@ class ConfigManager:
             self.SPSpassword = self.__config['DEFAULT']['password']
             self.downloaddestination = self.__config['DEFAULT']['default_destination'].replace("~",
                                                                                                "c:\\Users\\" + os.getlogin())
-            self.logfilelocation = self.__config['DEFAULT']['log_file_location'].replace("~",
-                                                                                               "c:\\Users\\" + os.getlogin())
             self.connectionnumretries = int(self.__config['DEFAULT']['number_connection_retries'])
             self.connectionretrydelay = int(self.__config['DEFAULT']['connection_retry_delay'])
             self.SPSfullwarningdays = int(self.__config['EMAIL']['warning_days'])
+            self.log_path = self.__config['DEFAULT']['log_path']
 
     ## Default Constructor
     # Just uses default values
@@ -35,3 +34,4 @@ class ConfigManager:
         self.connectionnumretries = 1
         self.connectionretrydelay = 1
         self.SPSfullwarningdays = 0
+        self.log_path = './log.txt'

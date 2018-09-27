@@ -1,3 +1,4 @@
+import logging
 import os
 from ftplib import FTP
 import time
@@ -27,10 +28,12 @@ class SPSLib:
                 success = True
             except:
                 print('Connection Attempt ' + str(n+1) + ' to ' + address + ' Failed')
+                logging.warning('Connection Attempt ' + str(n+1) + ' to ' + address + ' Failed')
                 time.sleep(retrydelay)
 
         if not success:
             print('Error Connecting To PLC at ' + address)
+            logging.error('Error Connecting To PLC at ' + address)
             raise SPSConnectionException()
         return ftp    
 
@@ -48,7 +51,7 @@ class SPSLib:
         self.change_to_date(date)
         files = self.ls()
         for file in files:
-            outfile = open(self.default_destination + file, 'wb')
+            outfile = open(os.path.join(self.default_destination, file), 'wb')
             self.client.retrbinary("retr " + file, outfile.write)
             outfile.close()
         self.client.cwd(directory)
@@ -64,11 +67,12 @@ class SPSLib:
         for file in files:
             if datestring in file:
                 num_files = num_files+1
-                outfile = open(self.default_destination + file, 'wb')
+                outfile = open(os.path.join(self.default_destination, file), 'wb')
                 self.client.retrbinary("retr " + file, outfile.write)
                 outfile.close()
         self.client.cwd(directory)
         if num_files is 0:
+            logging.warning('No Files Available For Date ' + datestring)
             raise Exception('No Files Available For Date ' + datestring)
 
     ## List the contents of the current directory on the PLC
@@ -99,6 +103,7 @@ class SPSLib:
 
     ## Close the connection to the SPS
     def close_connection(self):
+        logging.debug("Closing Connection To SPS")
         self.client.quit()
 
 

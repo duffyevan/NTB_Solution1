@@ -51,7 +51,7 @@ class SPSLib:
         self.change_to_date(date)
         files = self.ls()
         for file in files:
-            outfile = open(self.default_destination + file, 'wb')
+            outfile = open(os.path.join(self.default_destination, file), 'wb')
             self.client.retrbinary("retr " + file, outfile.write)
             outfile.close()
         self.client.cwd(directory)
@@ -67,7 +67,7 @@ class SPSLib:
         for file in files:
             if datestring in file:
                 num_files = num_files+1
-                outfile = open(self.default_destination + file, 'wb')
+                outfile = open(os.path.join(self.default_destination, file), 'wb')
                 self.client.retrbinary("retr " + file, outfile.write)
                 outfile.close()
         self.client.cwd(directory)

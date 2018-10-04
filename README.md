@@ -30,6 +30,18 @@ The program is written for python 3, specifically 3.5 and above.
 1. The Certificate must be obtained from someone at NTB who owns the license. Currently (27/9/2018) that person is Rupert Fritz.
 2. Once the certificate is obtained, open the console of LinkManager and upload the cert file using the interface, then enter the password linked to the certificate.
 
+### Configuring The Program
+Before running the program, you must first configure the settings. In the User directory, open up `collection.conf`. 
+There are 3 sections:
+1. __DEFAULT__: In this section you must change the username and password to those of the SPS modules. If you would 
+like 
+you can also change the addresses to those of the SPSs which you would like to download from.
+2. __EMAIL__: This section pertains to the emails that are sent when errors occur (Note: The GUI program will not send 
+emails). The SMTP server, port, username, and password must be set to be a server that will allow the automated sending 
+of emails.
+3. __HOSTPOINT__: The hostname, username and password must be set to those of the HostPoint FTP client so that the 
+upload can be done automatically (Note: The GUI program will not automatically upload to HostPoint).
+
 ### Creating A Shortcut to The Main Program
 You're almost there! All that needs to be done now is creating an easy way to launch the program. 
 1. Navigate to the `NTB-WPZ-Automation` folder that came out of the zip file and then navigate to the `ProgramFiles` folder.

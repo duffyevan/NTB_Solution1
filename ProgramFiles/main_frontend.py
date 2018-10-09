@@ -230,14 +230,13 @@ class Main(QObject):
     ## Sets the enabled status of all the buttons that can create a thread. Used to prevent multiple async downloads
     # @param enabled the boolean value whether its enabled or not
     def setAllButtonsEnabled(self, enabled):
-        if enabled:
-            self.ui.pushButtonDownloadForDay.setEnabled(True)
-            self.ui.pushButtonDownloadForMonth.setEnabled(True)
-            self.ui.pushButtonDownloadForYear.setEnabled(True)
-        else:
-            self.ui.pushButtonDownloadForDay.setEnabled(False)
-            self.ui.pushButtonDownloadForMonth.setEnabled(False)
-            self.ui.pushButtonDownloadForYear.setEnabled(False)
+        self.ui.pushButtonDownloadForDay.setEnabled(enabled)
+        self.ui.pushButtonDownloadForMonth.setEnabled(enabled)
+        self.ui.pushButtonDownloadForYear.setEnabled(enabled)
+        self.ui.pushButtonDisselectAll.setEnabled(enabled)
+        self.ui.pushButtonSelectAll.setEnabled(enabled)
+        for checkbox in self.checkBoxes:
+            checkbox.setEnabled(enabled)
 
     ## Set up the UI elements and do any needed config setup before starting the UI
     def setup_ui(self):

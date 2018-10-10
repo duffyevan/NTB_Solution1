@@ -29,7 +29,8 @@ class Main(QObject):
         super(Main, self).__init__()
         self.ui = None
         self.config = ConfigManager(config_file_path)
-        logging.basicConfig(filename=self.config.log_path, level=logging.INFO, format='%(asctime)s: %(levelname)s : %(message)s')
+        logging.basicConfig(filename=self.config.log_path, level=logging.INFO,
+                            format='%(asctime)s: %(levelname)s : %(message)s')
         logging.info("Starting...")
 
     ## Helper for creating a SPS object. Uses default username, password and settings
@@ -83,10 +84,13 @@ class Main(QObject):
     def downloadFilesForDay(self):
         logging.info("Initiated Download For Day")
 
+        selected_hosts = self.getSelectedHosts()
+        if len(selected_hosts) is 0:
+            self.showDialogSignal.emit("Error!", "No PLC Selected")
+            return
+
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
-
-        selected_hosts = self.getSelectedHosts()
 
         for host in selected_hosts:
             try:
@@ -120,10 +124,13 @@ class Main(QObject):
     def downloadFilesForMonth(self):
         logging.info("Initiated Download For Month")
 
+        selected_hosts = self.getSelectedHosts()
+        if len(selected_hosts) is 0:
+            self.showDialogSignal.emit("Error!", "No PLC Selected")
+            return
+
         self.setProgressBarEnabled(True)
         self.setAllButtonsEnabled(False)
-
-        selected_hosts = self.getSelectedHosts()
 
         for host in selected_hosts:
             try:
@@ -156,10 +163,14 @@ class Main(QObject):
     ## Download all files for a given year
     def downloadFilesForYear(self):
         logging.info("Initiated Download For Year")
-        self.setProgressBarEnabled(True)
-        self.setAllButtonsEnabled(False)
 
         selected_hosts = self.getSelectedHosts()
+        if len(selected_hosts) is 0:
+            self.showDialogSignal.emit("Error!", "No PLC Selected")
+            return
+
+        self.setProgressBarEnabled(True)
+        self.setAllButtonsEnabled(False)
 
         for host in selected_hosts:
             try:
@@ -278,7 +289,7 @@ class Main(QObject):
 
 
 if __name__ == '__main__':
-# def run():
+    # def run():
     main = Main()
     app = QApplication(sys.argv)
     main.window = QMainWindow()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
         self.actionReload_Configuration_File.setObjectName("actionReload_Configuration_File")
         self.openLogFileButton = QtWidgets.QAction(MainWindow)
         self.openLogFileButton.setObjectName("openLogFileButton")
+        self.menuNTB_Datacollection_Automation.addAction(self.actionQuit)
         self.menuConfiguration.addAction(self.openConfFileButton)
         self.menuTools.addAction(self.openLogFileButton)
         self.menubar.addAction(self.menuNTB_Datacollection_Automation.menuAction())
